@@ -25,7 +25,7 @@ help='xxx'
 NEWLINE='
 '
 print_usage() {
-  printf "Usage: ..."
+  printf "Usage: Do bash run.sh -h to view help"
 }
 
 while getopts p:n:d:s:u:g:w:e:x:vkrh flag; do
@@ -48,10 +48,8 @@ while getopts p:n:d:s:u:g:w:e:x:vkrh flag; do
     esac
 done
 
-echo "flag: $help"
-
 if [ "$help" = "" ]; then
-echo 'Help'
+echo 'HELP:'
 echo 'Use the -p flag to specify the base port number.(DEFAULT ${basePort})'
 echo 'Use the -n flag to specify the number of instances to create.(DEFAULT ${instances})'
 echo 'Your instances will be spread on ports ranging from the supplied or default value up to (base+instances-1)'
