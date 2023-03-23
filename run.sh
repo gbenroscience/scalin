@@ -90,7 +90,6 @@ do
    echo "status check success"
   else
    echo "status check failed"
-   exit 1
   fi
 
 done < ${serviceNamesRegistry}
@@ -113,7 +112,6 @@ do
    echo "stopped $p successfully"
   else
    echo "couldn't stop $p"
-   exit 1
   fi
 done < ${serviceNamesRegistry}
 exit 0
@@ -134,7 +132,6 @@ do
    echo "started $p successfully"
   else
    echo "couldn't start $p"
-   exit 1
   fi
 done < ${serviceNamesRegistry}
 exit 0
