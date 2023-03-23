@@ -61,7 +61,7 @@ echo 'Use the -w flag to specify the working directory for the service.'
 echo 'Use the -e flag to specify the path to the executable for the service'
 echo 'Use the -x flag to specify the path to a script that should be run before executing commands that create services'
 
-preRun
+
 echo 'Use the -v flag to show the status for the services when installed'
 echo 'Use the -k flag to kill the services'
 echo 'Use the -r flag to run the pre-created services'
