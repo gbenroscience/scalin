@@ -8,8 +8,8 @@ serviceNameLines=''
 
 basePort=8080
 instances=1
-desc='My service'
-service='HelloWorld'
+desc='Example scalin service'
+service='scalin'
 user='root'
 group='root'
 workingDir=${APP_DIR}
@@ -87,7 +87,14 @@ if [ -f "$serviceNamesRegistry" ]; then
     while IFS="" read -r p || [ -n "$p" ]
 do
   echo "Instance $p"
-  systemctl status ${p}
+  
+  if systemctl status ${p}; then
+   echo "status check success"
+  else
+   echo "status check failed"
+   exit 1
+  fi
+
 done < ${serviceNamesRegistry}
 exit 0
 else 
@@ -103,7 +110,13 @@ if [ -f "$serviceNamesRegistry" ]; then
     while IFS="" read -r p || [ -n "$p" ]
 do
   echo "Instance $p"
-  systemctl stop ${p}
+  
+  if systemctl stop ${p}; then
+   echo "stopped $p successfully"
+  else
+   echo "couldn't stop $p"
+   exit 1
+  fi
 done < ${serviceNamesRegistry}
 exit 0
 else 
@@ -119,7 +132,12 @@ if [ -f "$serviceNamesRegistry" ]; then
     while IFS="" read -r p || [ -n "$p" ]
 do
   echo "Instance $p"
-  systemctl restart ${p}
+  if systemctl restart ${p}; then
+   echo "started $p successfully"
+  else
+   echo "couldn't start $p"
+   exit 1
+  fi
 done < ${serviceNamesRegistry}
 exit 0
 else 
@@ -137,16 +155,36 @@ if [ -f "$serviceNamesRegistry" ]; then
     while IFS="" read -r p || [ -n "$p" ]
      do
      printf '%s\n' "$p"
-     systemctl stop ${p}
-     systemctl disable ${p}
+
+  if systemctl stop ${p}; then
+   echo "stopped $p successfully"
+  else
+   echo "couldn't stop $p"
+   exit 1
+  fi
+
+  if systemctl disable ${p}; then
+   echo "disabled(start on boot) $p successfully"
+  else
+   echo "couldn't disable(start on boot) for $p "
+   exit 1
+  fi
+
+
   
 done < ${serviceNamesRegistry}
 else 
     echo "${serviceNamesRegistry} does not exist."
 fi
 
-# delete the service names servicePathRegistry itself
-rm -f ${serviceNamesRegistry}
+# delete the serviceNamesRegistry
+  if rm -f ${serviceNamesRegistry}; then
+   echo "deleted service names registry successfully"
+  else
+   echo "couldn't delete the service names registry"
+   exit 1
+  fi
+
 
 # Now delete all the service entries in /etc/systemd/system/
 if [ -f "$servicePathRegistry" ]; then
@@ -161,8 +199,15 @@ done < ${servicePathRegistry}
 else 
     echo "${servicePathRegistry} does not exist."
 fi
-# delete the service servicePathRegistry itself
-rm -f ${servicePathRegistry}
+# delete the service servicePathRegistry
+
+
+  if rm -f ${servicePathRegistry}; then
+   echo "deleted service paths registry successfully"
+  else
+   echo "couldn't delete the service paths registry"
+   exit 1
+  fi
 
 echo 'run user-specified tasks'
 
