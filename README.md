@@ -11,14 +11,14 @@ It has very few flags that allow you to control the process, too.
 You may type `chmod a+x /path/to/scalin` at the terminal to make the file executable.<br>
 Otherwise, you will have to use <br><br>`bash /path/to/scalin <flags>`
 
-Optionally, to make the `scalin` command available everywhere, add it to PATH by doing:
+Optionally, to make the `scalin` command available everywhere, add it to **PATH** by doing:
 
 `vi ~/.bash_profile` *(or use some other editor)*
 
 Now add the following line to the file:<br>
 `export PATH=$PATH:/path/to/scalin`
 <br>Now save the file and then use:
- 
+
 `source ~/.bash_profile`
 
 
