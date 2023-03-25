@@ -13,7 +13,7 @@ desc='Example scalin service'
 service=''
 user='root'
 group='root'
-workingDir=''
+workDir=''
 execPath=''
 # path to a script that will be run before running commands that create services.
 preRun='xxx'
@@ -26,7 +26,7 @@ help='xxx'
 NEWLINE='
 '
 print_usage() {
-  printf "Usage: Do bash run.sh -h to view help"
+  printf "Usage: Do `bash scalin` or `scalin` -h to view help"
 }
 
 while getopts p:n:d:s:u:g:w:e:x:vkrh flag; do
@@ -37,7 +37,7 @@ while getopts p:n:d:s:u:g:w:e:x:vkrh flag; do
         s) service=${OPTARG};;
         u) user=${OPTARG};;
         g) group=${OPTARG};;
-        w) workingDir=${OPTARG};;
+        w) workDir=${OPTARG};;
         e) execPath=${OPTARG};;
         x) preRun=${OPTARG};;
         v) status=${OPTARG};;
@@ -72,6 +72,11 @@ echo "Hence, if you do not wish to supply these flags, just put your executable 
 exit 0
 fi
 
+echo "execPath: $execPath"
+echo "service: $service"
+echo "workinDir: $workDir"
+echo "instances: $instances"
+echo "basePort: $basePort"
 
 
 if [ "$service" = "" ]; then
@@ -83,13 +88,13 @@ fi
 serviceFolder=${APP_DIR}/${service}
 
 # No working directory supplied, so set a default
-if [ "$workingDir" = "" ] ; then
-workingDir=$serviceFolder
+if [ "$workDir" = "" ] ; then
+workDir=$serviceFolder
 fi
 
 # No executable path supplied, so set a default
 if [ "$execPath" = "" ] ; then
-execPath=$workingDir/main
+execPath=$workDir/main
 fi
 
 
@@ -270,7 +275,7 @@ After=multi-user.target
 [Service]
 User=${user}
 Group=${group}
-WorkingDirectory=${workingDir}
+WorkingDirectory=${workDir}
 ExecStart=${execPath} --port=${port}
 [Install]
 WantedBy=multi-user.target
