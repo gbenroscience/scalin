@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# The path where scalin is currently running
 APP_DIR=$(pwd)
 # mkdir -p ${APP_DIR}
 
@@ -9,17 +10,17 @@ serviceNameLines=''
 basePort=8080
 instances=1
 desc='Example scalin service'
-service='scalin'
+service=''
 user='root'
 group='root'
-workingDir=${APP_DIR}
-execPath=${workingDir}/main
+workingDir=''
+execPath=''
 # path to a script that will be run before running commands that create services.
 preRun='xxx'
 status="xxx"
 kill="xxx"
 run="xxx"
-help='xxx'
+help='xxx' 
 
 # NEWLINE=$'\n'
 NEWLINE='
@@ -72,11 +73,47 @@ exit 0
 fi
 
 
+
+if [ "$service" = "" ]; then
+echo "Please specify a service to continue!"
+exit 1
+fi
+
+# Every service we create will have its registry here
+serviceFolder=${APP_DIR}/${service}
+
+# No working directory supplied, so set a default
+if [ "$workingDir" = "" ] ; then
+workingDir=$serviceFolder
+fi
+
+# No executable path supplied, so set a default
+if [ "$execPath" = "" ] ; then
+execPath=$workingDir/main
+fi
+
+
+# Create the serviceFolder directory
+if [ ! -d "$serviceFolder" ]; then
+    if mkdir -p $serviceFolder; then
+      echo "created service folder"
+    else
+      echo "couldn't create service folder"
+      exit 1
+    fi
+  else
+     echo "service folder exists already"  
+fi
+
+
 # store the names of the services here
-serviceNamesRegistry=${APP_DIR}/.services.ser
+serviceNamesRegistry=${serviceFolder}/.services.ser
 
 # store the full paths to the services here
-servicePathRegistry=${APP_DIR}/.registry.ser
+servicePathRegistry=${serviceFolder}/.registry.ser
+
+
+
 
 # User just wishes to check the status of the instances
 if [ "$status" = "" ] ; then
@@ -84,7 +121,7 @@ echo "Check status of all instances"
 if [ -f "$serviceNamesRegistry" ]; then
     while IFS="" read -r p || [ -n "$p" ]
 do
-  echo "Instance $p"
+  echo "Checking status of instance $p"
   
   if systemctl status ${p}; then
    echo "status check success"
@@ -106,7 +143,7 @@ echo "Kill all instances"
 if [ -f "$serviceNamesRegistry" ]; then
     while IFS="" read -r p || [ -n "$p" ]
 do
-  echo "Instance $p"
+  echo "Stopping instance $p"
   
   if systemctl stop ${p}; then
    echo "stopped $p successfully"
@@ -127,7 +164,7 @@ echo "Restart all instances"
 if [ -f "$serviceNamesRegistry" ]; then
     while IFS="" read -r p || [ -n "$p" ]
 do
-  echo "Instance $p"
+  echo "Restarting instance $p"
   if systemctl restart ${p}; then
    echo "started $p successfully"
   else
@@ -216,7 +253,7 @@ exit 1
 fi
 fi
 
-echo "create ${instances} fresh instances"
+echo "creating ${instances} fresh instances"
 # create new services and register them. Also start them all.
 endPort=$(($basePort + $instances - 1))
 lastInst=$(($instances - 1))
@@ -238,9 +275,28 @@ ExecStart=${execPath} --port=${port}
 [Install]
 WantedBy=multi-user.target
 EOF
-systemctl enable ${fileName}
-systemctl start ${fileName}
-systemctl status ${fileName}
+
+  if systemctl enable ${fileName}; then
+   echo "enabled(start on boot) $p successfully"
+  else
+   echo "couldn't enable(start on boot) for $p"
+  fi
+
+  if systemctl start ${fileName}; then
+   echo "started $p successfully"
+  else
+   echo "couldn't start $p "
+  fi
+
+  if systemctl status ${fileName}; then
+   echo "printed status for service $p"
+  else
+   echo "couldn't print status for service $p"
+  fi
+
+
+
+
 echo "setup and running ${fileName} service"
  servicePathLines+=${path}
  serviceNameLines+=${fileName}
