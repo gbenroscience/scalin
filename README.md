@@ -68,5 +68,27 @@ To create a scaled service, use:
 `scalin  -s <service_name> -p 8000 -n 4 -d "Money Making Service" -u <linux_user> -g <linux_group> -w /path/to/workingdirectory -e /path/to/executable`
 
 
+## NOTES
+Once up and running, you can use a simple modification to put all these instances behind nginx or apache load balancers.
+
+For nginx, if you have `5` servers, and your `-p` flag is set to `8080`, add the lines to your `nginx.conf`:
+
+```nginx
+    upstream <servicename> {
+      server localhost:8080 weight=10;
+      server localhost:8081 weight=10;
+      server localhost:8082 weight=10;
+      server localhost:8083 weight=10;
+      server localhost:8084 weight=10;
+    }
+```
+
+Then add:   
+```nginx      
+location / {
+            proxy_pass http://<servicename>;
+        }
+```       
+to your active server block
 ### Conclusion
-The project is still evolving and I found it useful for my work, when I dont want to install something as elaborate as docker on a bare metal server or some other use cases.
+*The project is still evolving and I found it useful for my work, when I dont want to install something as elaborate as docker on a bare metal server or some other use cases.*
