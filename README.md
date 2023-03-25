@@ -71,7 +71,7 @@ To create a scaled service, use:
 ## NOTES
 Once up and running, you can use a simple modification to put all these instances behind nginx or apache load balancers.
 
-For nginx, if you have `5` servers, and your `-p` flag is set to `8080`, add the lines to your `nginx.conf`:
+For `nginx`, if you have `5` servers, and your `-p` flag is set to `8080`, add the lines to your `nginx.conf`:
 
 ```nginx
     upstream <servicename> {
