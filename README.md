@@ -85,9 +85,9 @@ For `nginx`, if you have `5` servers, and your `-p` flag is set to `8080`, add t
 
 Then add:   
 ```nginx      
-location / {
-            proxy_pass http://<servicename>;
-        }
+    location / {
+       proxy_pass http://<servicename>;
+    }
 ```       
 to your active server block
 ### Conclusion
