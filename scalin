@@ -72,13 +72,6 @@ echo "Hence, if you do not wish to supply these flags, just put your executable 
 exit 0
 fi
 
-echo "execPath: $execPath"
-echo "service: $service"
-echo "workinDir: $workDir"
-echo "instances: $instances"
-echo "basePort: $basePort"
-
-
 if [ "$service" = "" ]; then
 echo "Please specify a service to continue!"
 exit 1
