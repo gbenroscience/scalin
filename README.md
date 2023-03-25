@@ -24,18 +24,19 @@ Now add the following line to the file:<br>
 
 ### Flags
 
-***Use the `-h` flag to view help<br>
-Use the `-v` flag to view the status of all instances of a scaled service<br>
-Use the `-k` flag to kill all instances of a scaled service<br>
-Use the `-r` flag to run all instances of a scaled service<br>
-Use the `-s` flag to specify the service name<br>
-Use the `-p` flag to specify the base port name<br>
-Use the `-n` flag to specify the number of instances<br>
-Use the `-d` flag to specify a description for the service<br>
-Use the `-u` flag to specify the linux user running `scalin`<br>
-Use the `-g` flag to specify the linux group running `scalin`<br>
-Use the `-w` flag to specify a working directory for the instances<br>
-Use the `-e` flag to specify the path to the service executable<br>***
+1. *Use the `-s` flag to specify the service name*<br>
+2. *Use the `-h` flag to view help*<br>
+3. *Use the `-v` flag to view the status of all instances of a scaled service*<br>
+4. *Use the `-k` flag to kill all instances of a scaled service*<br>
+5. *Use the `-r` flag to run all instances of a scaled service*<br>
+6. *Use the `-p` flag to specify the base port name*<br>
+7. *Use the `-n` flag to specify the number of instances*<br>
+8. *Use the `-d` flag to specify a description for the service*<br>
+9. *Use the `-u` flag to specify the linux user running `scalin`*<br>
+10. *Use the `-g` flag to specify the linux group running `scalin`*<br>
+11. *Use the `-w` flag to specify a working directory for the instances*<br>
+12. *Use the `-e` flag to specify the path to the service executable*<br>
+
 
 
 ## Usage
