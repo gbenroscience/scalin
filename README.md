@@ -40,7 +40,7 @@ Now add the following line to the file:<br>
 10. *Use the `-g` flag to specify the linux group running `scalin`*<br>
 11. *Use the `-w` flag to specify a working directory for the instances*<br>
 12. *Use the `-e` flag to specify the path to the service executable*<br>
-13. *Use the `-x` flag to specify a script that you would love to run before creating and starting the instannces. This was included to allow users do stuff like: pull the source code from VCS, build the executable from source, and maybe copy the executable to the path specified using the `-e` flag*
+13. *Use the `-x` flag to specify a script that you would love to run before creating and starting the instances. This was included to allow users do stuff like: pull the source code from VCS, build the executable from source, and maybe copy the executable to the path specified using the `-e` flag*
 
 
 
