@@ -76,6 +76,12 @@ To create a scaled service, use:
 5. When running the `-v`, `-k`, `r` flags, you must supply the `-s` flag, as it tells the script what service you want to interact with. 
 
 
+Make sure that when you are specifying a value for `-p`, say `P`, that all values of the ports between `P` and `P+N-1` are free. Where N is the number of instances(the value passed to the `-n` flag). 
+So if you use:
+`scalin -s moneymaker -p 8090 -n 5 ...`
+Then the ports `8090, 8091, 8092, 8093, 8094` must be available for `scalin` to apply to your app. e.g. from `8090 - (8090+5-1)`, which is `8090 - 8094`
+
+
 
 ## NOTES
 Once up and running, you can use a simple modification to put all these instances behind nginx or apache load balancers.
