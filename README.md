@@ -33,14 +33,15 @@ Now add the following line to the file:<br>
 3. *Use the `-v` flag to view the status of all instances of a scaled service*<br>
 4. *Use the `-k` flag to kill all instances of a scaled service*<br>
 5. *Use the `-r` flag to run all instances of a scaled service*<br>
-6. *Use the `-p` flag to specify the base port number*<br>
-7. *Use the `-n` flag to specify the number of instances*<br>
-8. *Use the `-d` flag to specify a description for the service*<br>
-9. *Use the `-u` flag to specify the linux user running `scalin`*<br>
-10. *Use the `-g` flag to specify the linux group running `scalin`*<br>
-11. *Use the `-w` flag to specify a working directory for the instances*<br>
-12. *Use the `-e` flag to specify the path to the service executable*<br>
-13. *Use the `-x` flag to specify a script that you would love to run before creating and starting the instances. This was included to allow users do stuff like: pull the source code from VCS, build the executable from source, and maybe copy the executable to the path specified using the `-e` flag*
+6. *Use the `-z` flag to kill and delete all instances of a scaled service*<br>
+7. *Use the `-p` flag to specify the base port number*<br>
+8. *Use the `-n` flag to specify the number of instances*<br>
+9. *Use the `-d` flag to specify a description for the service*<br>
+10. *Use the `-u` flag to specify the linux user running `scalin`*<br>
+11. *Use the `-g` flag to specify the linux group running `scalin`*<br>
+12. *Use the `-w` flag to specify a working directory for the instances*<br>
+13. *Use the `-e` flag to specify the path to the service executable*<br>
+14. *Use the `-x` flag to specify a script that you would love to run before creating and starting the instances. This was included to allow users do stuff like: pull the source code from VCS, build the executable from source, and maybe copy the executable to the path specified using the `-e` flag*
 
 
 
@@ -49,6 +50,11 @@ Now add the following line to the file:<br>
 To view `help`, type:
 
 `scalin -h`<br>
+
+## NOTE 
+***The details of a running service can only be manipulated from the directory where the 
+command to create the instances were run. Always return to the directory where you
+created a service in order to run commands to manipulate that service!***
 
 To view the status of running services:<br>
 
@@ -61,6 +67,11 @@ To kill the running services:
 To restart the services after killing them:
 
 `scalin -s <service_name> -r`<br>
+
+
+To destroy all instances of a created service:
+
+`scalin -s <service_name> -z`<br>
 
 
 ### Service creation

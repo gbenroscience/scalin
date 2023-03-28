@@ -19,6 +19,7 @@ execPath=''
 preRun='xxx'
 status="xxx"
 kill="xxx"
+teardown="xxx"
 run="xxx"
 help='xxx' 
 
@@ -29,7 +30,7 @@ print_usage() {
   printf "Usage: Do `bash scalin` or `scalin` -h to view help"
 }
 
-while getopts p:n:d:s:u:g:w:e:x:vkrh flag; do
+while getopts p:n:d:s:u:g:w:e:x:vkrhz flag; do
     case "${flag}" in
         p) basePort=${OPTARG};;
         n) instances=${OPTARG};;
@@ -44,6 +45,7 @@ while getopts p:n:d:s:u:g:w:e:x:vkrh flag; do
         k) kill=${OPTARG};;
         r) run=${OPTARG};;
         h) help=${OPTARG};;
+        z) teardown=${OPTARG};;
         *) print_usage
         exit 1 ;;
     esac
@@ -65,6 +67,7 @@ echo 'Use the -x flag to specify the path to a script that should be run before 
 
 echo 'Use the -v flag to show the status for the services when installed'
 echo 'Use the -k flag to kill the services'
+echo 'Use the -z flag to destroy and delete the pre-created services'
 echo 'Use the -r flag to run the pre-created services'
 echo 'Use the -h flag to show the help for this tool'
 echo "If the -w flag is not available, the current directory of this script will be taken as the working directory and the executable's path will be ${workDir}/main"
@@ -176,12 +179,14 @@ else
 fi
 fi
 
-
-echo "destroy and delete all running instances"
+teardown(){
+  local snr=$1
+  local spr=$2
+  
 # Destroy, delete and recreate all instances
 # loop through services in servicePathRegistry, shut them down, and disable them(stop startup on boot)
-if [ -f "$serviceNamesRegistry" ]; then
-    echo "$serviceNamesRegistry exists."
+if [ -f "$snr" ]; then
+    echo "$snr exists."
     while IFS="" read -r p || [ -n "$p" ]
      do
      printf '%s\n' "$p"
@@ -200,15 +205,13 @@ if [ -f "$serviceNamesRegistry" ]; then
    exit 1
   fi
 
-
-  
-done < ${serviceNamesRegistry}
+done < ${snr}
 else 
-    echo "${serviceNamesRegistry} does not exist."
+    echo "${snr} does not exist."
 fi
 
-# delete the serviceNamesRegistry
-  if rm -f ${serviceNamesRegistry}; then
+# delete the snr
+  if rm -f ${snr}; then
    echo "deleted service names registry successfully"
   else
    echo "couldn't delete the service names registry"
@@ -217,27 +220,42 @@ fi
 
 
 # Now delete all the service entries in /etc/systemd/system/
-if [ -f "$servicePathRegistry" ]; then
-    echo "$servicePathRegistry exists."
+if [ -f "$spr" ]; then
+    echo "$spr exists."
     while IFS="" read -r p || [ -n "$p" ]
      do
      printf '%s\n' "$p"
      echo "deleting service ${p}"
      rm -f ${p}
   
-done < ${servicePathRegistry}
+done < ${spr}
 else 
-    echo "${servicePathRegistry} does not exist."
+    echo "${spr} does not exist."
 fi
-# delete the service servicePathRegistry
+# delete the service spr
 
-
-  if rm -f ${servicePathRegistry}; then
+  if rm -f ${spr}; then
    echo "deleted service paths registry successfully"
   else
    echo "couldn't delete the service paths registry"
    exit 1
   fi
+  
+}
+
+# TEAR DOWN
+if [ "$teardown" = "" ] ; then
+echo "teardown all instances and destroy scaled service"
+  teardown $serviceNamesRegistry $servicePathRegistry
+  exit 0
+fi
+# END TEARDOWN
+
+# This is a teardown and destroy process also.
+
+echo "destroy and delete all running instances, before creating to new specs"
+
+teardown $serviceNamesRegistry $servicePathRegistry
 
 echo 'run user-specified tasks'
 
