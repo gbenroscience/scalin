@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # The path where scalin is currently running
-APP_DIR=$(pwd)
+APP_DIR=/home/scalin
 # mkdir -p ${APP_DIR}
 
 servicePathLines=''
