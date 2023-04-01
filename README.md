@@ -51,11 +51,6 @@ To view `help`, type:
 
 `scalin -h`<br>
 
-## NOTE 
-***The details of a running service can only be manipulated from the directory where the 
-command to create the instances were run. Always return to the directory where you
-created a service in order to run commands to manipulate that service!***
-
 To view the status of running services:<br>
 
 `scalin -s <service_name> -v`<br>
