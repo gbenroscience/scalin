@@ -258,8 +258,7 @@ echo "destroy and delete all running instances, before creating to new specs"
 teardown $serviceNamesRegistry $servicePathRegistry
 
 echo 'run user-specified tasks'
-
-if [ $preRun != "" ] ; then
+if [ $preRun != "" ] && [ $preRun != "xxx" ]; then
 # task exists
 if source $preRun; then
 echo 'user-specified scripts completed successfully'
