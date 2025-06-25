@@ -36,7 +36,7 @@ help='xxx'
 NEWLINE='
 '
 print_usage() {
-  printf "Usage: Do `bash scalin` or `scalin` -h to view help"
+  printf "Usage: Do bash scalin or scalin -h to view help"
 }
 
 while getopts p:n:d:s:u:g:w:e:x:t:vkrhz flag; do
@@ -73,7 +73,7 @@ echo 'Use the -g flag to specify the linux group that is running the services.'
 echo 'Use the -w flag to specify the working directory for the service.'
 echo 'Use the -e flag to specify the path to the executable for the service'
 echo 'Use the -x flag to specify the path to a script that should be run before executing commands that create services'
-echo 'Use the -t flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number> c' 
+echo 'Use the -t flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number>' 
 echo 'Use the -v flag to show the status for the services when installed'
 echo 'Use the -k flag to kill the services'
 echo 'Use the -z flag to destroy and delete the pre-created services'
