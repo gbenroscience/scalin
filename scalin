@@ -4,6 +4,13 @@
 APP_DIR=/home/scalin
 # mkdir -p ${APP_DIR}
 
+TYPE_SPRINGBOOT="springboot"
+TYPE_MICRONAUT="micronaut"
+TYPE_QUARKUS="quarkus"
+TYPE_JAR="jar"
+TYPE_NATIVE="native"
+
+
 servicePathLines=''
 serviceNameLines=''
 
@@ -15,6 +22,8 @@ user='root'
 group='root'
 workDir=''
 execPath=''
+# We support springboot, quarkus and micronaut, jar and native for now, but we default to native(if not specified). We use this to determine how to build the ExecStart line.
+appType=$TYPE_NATIVE
 # path to a script that will be run before running commands that create services.
 preRun='xxx'
 status="xxx"
@@ -30,7 +39,7 @@ print_usage() {
   printf "Usage: Do `bash scalin` or `scalin` -h to view help"
 }
 
-while getopts p:n:d:s:u:g:w:e:x:vkrhz flag; do
+while getopts p:n:d:s:u:g:w:e:x:t:vkrhz flag; do
     case "${flag}" in
         p) basePort=${OPTARG};;
         n) instances=${OPTARG};;
@@ -41,6 +50,7 @@ while getopts p:n:d:s:u:g:w:e:x:vkrhz flag; do
         w) workDir=${OPTARG};;
         e) execPath=${OPTARG};;
         x) preRun=${OPTARG};;
+        t) appType=${OPTARG};;
         v) status=${OPTARG};;
         k) kill=${OPTARG};;
         r) run=${OPTARG};;
@@ -63,8 +73,7 @@ echo 'Use the -g flag to specify the linux group that is running the services.'
 echo 'Use the -w flag to specify the working directory for the service.'
 echo 'Use the -e flag to specify the path to the executable for the service'
 echo 'Use the -x flag to specify the path to a script that should be run before executing commands that create services'
-
-
+echo 'Use the -t flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number> c' 
 echo 'Use the -v flag to show the status for the services when installed'
 echo 'Use the -k flag to kill the services'
 echo 'Use the -z flag to destroy and delete the pre-created services'
@@ -92,6 +101,38 @@ fi
 if [ "$execPath" = "" ] ; then
 execPath=$workDir/main
 fi
+
+# Run some checks to ensure the inputs are valid
+if ! [[ "$basePort" =~ ^[0-9]+$ ]]; then
+  echo "Error: basePort (-p) must be a valid number."
+  exit 1
+fi
+if ! [[ "$instances" =~ ^[0-9]+$ && "$instances" -gt 0 ]]; then
+  echo "Error: instances (-n) must be a positive integer."
+  exit 1
+fi
+if [ -z "$service" ]; then
+  echo "Error: You must specify a service name with -s."
+  exit 1
+fi
+
+
+if [ "$appType" = "$TYPE_SPRINGBOOT" ]; then
+echo "Spring boot application detected"
+elif ["$appType" = "$TYPE_MICRONAUT" ]; then
+echo "Quarkus application detected"
+elif ["$appType" = "$TYPE_QUARKUS" ]; then
+echo "Micronaut application detected"
+elif ["$appType" = "$TYPE_JAR" ]; then
+echo "Executable jar file detected.. Your jar application should accept the port number with --port=<port_number> syntax on the command line"
+elif ["$appType" = "$TYPE_NATIVE" ]; then
+echo "Native linux executable detected.. Your app should accept the port number with --port=<port_number> syntax on the command line"
+else
+echo "Unsupported application: $appType , the system will now exit."
+exit 1
+fi
+
+
 
 
 # Create the serviceFolder directory
@@ -268,6 +309,8 @@ exit 1
 fi
 fi
 
+execCrash="false"
+javaPath=$(which java)
 echo "creating ${instances} fresh instances"
 # create new services and register them. Also start them all.
 endPort=$(($basePort + $instances - 1))
@@ -277,8 +320,8 @@ do
 port=$(($basePort + $i))
 fileName=${service}${port}.service
 path=/etc/systemd/system/${fileName}
-   echo "Will deploy instance at ${path}"
-cat <<EOF> ${path}
+echo "Will deploy instance at ${path}"
+cat << EOF > ${path}
 [Unit]
 Description=${desc} on ${port}
 After=multi-user.target
@@ -286,10 +329,33 @@ After=multi-user.target
 User=${user}
 Group=${group}
 WorkingDirectory=${workDir}
-ExecStart=${execPath} --port=${port}
+$(
+if [ "$appType" = "springboot" ]; then
+echo "ExecStart=${javaPath} -jar ${execPath} --server.port=${port}"
+elif [ "$appType" = "micronaut" ]; then
+echo "ExecStart=${javaPath} -jar ${execPath} --micronaut.server.port=${port}"
+elif [ "$appType" = "quarkus" ]; then
+echo "ExecStart=${javaPath} -jar ${execPath} --quarkus.http.port=${port}"
+elif [ "$appType" = "jar" ]; then
+echo "ExecStart=${javaPath} -jar ${execPath} --port=${port}"
+elif [ "$appType" = "native" ]; then
+echo "ExecStart=${execPath} --port=${port}"
+else
+    execCrash="true"
+fi
+)
+
 [Install]
 WantedBy=multi-user.target
 EOF
+
+
+if [ "$execCrash" = "true" ]; then
+        echo "The appType(-t) is unknown.The system will now exit. Specify a supported appType(-t) and try again"
+        exit 1
+    else
+        echo "services written to systemd"
+fi
 
   if systemctl enable ${fileName}; then
    echo "enabled(start on boot) $p successfully"
