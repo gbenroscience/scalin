@@ -1,16 +1,12 @@
 #!/bin/bash
-
 # The path where scalin is currently running
 APP_DIR=/home/scalin
 # mkdir -p ${APP_DIR}
-
 TYPE_SPRINGBOOT="springboot"
 TYPE_MICRONAUT="micronaut"
 TYPE_QUARKUS="quarkus"
 TYPE_JAR="jar"
 TYPE_NATIVE="native"
-
-
 servicePathLines=''
 serviceNameLines=''
 
