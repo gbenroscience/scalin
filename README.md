@@ -16,6 +16,8 @@ Use the newly introduced flag -t micronaut
 Use the newly introduced flag -t quarkus
 ### Jar executable
 Use the newly introduced flag -t jar. This presupposes the fact that your application can receive the port number from the command line using the --port=portnumber syntax
+### War executable
+Use the newly introduced flag -t war. This presupposes the fact that your application can receive the port number from the command line using the --port=portnumber syntax
 ### Linux executable
 Use the newly introduced flag -t native or ignore the flag altogether. This presupposes the fact that your application can receive the port number from the command line using the --port=portnumber syntax. The system assumes your app is a native platform executable by default.
 
