@@ -116,15 +116,15 @@ fi
 
 if [ "$appType" = "$TYPE_SPRINGBOOT" ]; then
 echo "Spring boot application detected"
-elif ["$appType" = "$TYPE_MICRONAUT" ]; then
+elif [ "$appType" = "$TYPE_MICRONAUT" ]; then
 echo "Quarkus application detected"
-elif ["$appType" = "$TYPE_QUARKUS" ]; then
+elif [ "$appType" = "$TYPE_QUARKUS" ]; then
 echo "Micronaut application detected"
-elif ["$appType" = "$TYPE_JAR" ]; then
+elif [ "$appType" = "$TYPE_JAR" ]; then
 echo "Executable jar file detected.. Your jar application should accept the port number with --port=<port_number> syntax on the command line"
-elif ["$appType" = "$TYPE_WAR" ]; then
+elif [ "$appType" = "$TYPE_WAR" ]; then
 echo "Executable war file detected.. Your war application should accept the port number with --port=<port_number> syntax on the command line"
-elif ["$appType" = "$TYPE_NATIVE" ]; then
+elif [ "$appType" = "$TYPE_NATIVE" ]; then
 echo "Native linux executable detected.. Your app should accept the port number with --port=<port_number> syntax on the command line"
 else
 echo "Unsupported application: $appType , the system will now exit."
