@@ -219,7 +219,7 @@ else
 fi
 fi
 
-teardown(){
+teardownservices(){
   local snr=$1
   local spr=$2
   
@@ -284,9 +284,9 @@ fi
 }
 
 # TEAR DOWN
-if [ "$teardown" = "" ] ; then
+if [ "$teardown" = "" ]; then
 echo "teardown all instances and destroy scaled service"
-  teardown $serviceNamesRegistry $servicePathRegistry
+  teardownservices $serviceNamesRegistry $servicePathRegistry
   exit 0
 fi
 # END TEARDOWN
@@ -295,7 +295,7 @@ fi
 
 echo "destroy and delete all running instances, before creating to new specs"
 
-teardown $serviceNamesRegistry $servicePathRegistry
+teardownservices $serviceNamesRegistry $servicePathRegistry
 
 echo 'run user-specified tasks'
 if [ $preRun != "" ] && [ $preRun != "xxx" ]; then
