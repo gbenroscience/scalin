@@ -6,6 +6,7 @@ TYPE_SPRINGBOOT="springboot"
 TYPE_MICRONAUT="micronaut"
 TYPE_QUARKUS="quarkus"
 TYPE_JAR="jar"
+TYPE_WAR="war"
 TYPE_NATIVE="native"
 servicePathLines=''
 serviceNameLines=''
@@ -18,7 +19,7 @@ user='root'
 group='root'
 workDir=''
 execPath=''
-# We support springboot, quarkus and micronaut, jar and native for now, but we default to native(if not specified). We use this to determine how to build the ExecStart line.
+# We support springboot, quarkus and micronaut, jar, war and native for now, but we default to native(if not specified). We use this to determine how to build the ExecStart line.
 appType=$TYPE_NATIVE
 # path to a script that will be run before running commands that create services.
 preRun='xxx'
@@ -121,6 +122,8 @@ elif ["$appType" = "$TYPE_QUARKUS" ]; then
 echo "Micronaut application detected"
 elif ["$appType" = "$TYPE_JAR" ]; then
 echo "Executable jar file detected.. Your jar application should accept the port number with --port=<port_number> syntax on the command line"
+elif ["$appType" = "$TYPE_WAR" ]; then
+echo "Executable war file detected.. Your war application should accept the port number with --port=<port_number> syntax on the command line"
 elif ["$appType" = "$TYPE_NATIVE" ]; then
 echo "Native linux executable detected.. Your app should accept the port number with --port=<port_number> syntax on the command line"
 else
@@ -326,15 +329,17 @@ User=${user}
 Group=${group}
 WorkingDirectory=${workDir}
 $(
-if [ "$appType" = "springboot" ]; then
+if [ "$appType" = "$TYPE_SPRINGBOOT" ]; then
 echo "ExecStart=${javaPath} -jar ${execPath} --server.port=${port}"
-elif [ "$appType" = "micronaut" ]; then
+elif [ "$appType" = "$TYPE_MICRONAUT" ]; then
 echo "ExecStart=${javaPath} -jar ${execPath} --micronaut.server.port=${port}"
-elif [ "$appType" = "quarkus" ]; then
+elif [ "$appType" = "$TYPE_QUARKUS" ]; then
 echo "ExecStart=${javaPath} -jar ${execPath} --quarkus.http.port=${port}"
-elif [ "$appType" = "jar" ]; then
+elif [ "$appType" = "$TYPE_JAR" ]; then
 echo "ExecStart=${javaPath} -jar ${execPath} --port=${port}"
-elif [ "$appType" = "native" ]; then
+elif [ "$appType" = "$TYPE_WAR" ]; then
+echo "ExecStart=${javaPath} -jar ${execPath} --port=${port}"
+elif [ "$appType" = "$TYPE_NATIVE" ]; then
 echo "ExecStart=${execPath} --port=${port}"
 else
     execCrash="true"
