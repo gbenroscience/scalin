@@ -17,6 +17,8 @@ desc='Example scalin service'
 service=''
 user='root'
 group='root'
+# Load environment variables from this file
+envFile=''
 workDir=''
 execPath=''
 # We support springboot, quarkus and micronaut, jar, war and native for now, but we default to native(if not specified). We use this to determine how to build the ExecStart line.
@@ -48,6 +50,7 @@ while getopts p:n:d:s:u:g:w:e:x:t:vkrhz flag; do
         e) execPath=${OPTARG};;
         x) preRun=${OPTARG};;
         t) appType=${OPTARG};;
+        f) envFile=${OPTARG};;
         v) status=${OPTARG};;
         k) kill=${OPTARG};;
         r) run=${OPTARG};;
@@ -71,10 +74,11 @@ echo 'Use the -w flag to specify the working directory for the service.'
 echo 'Use the -e flag to specify the path to the executable for the service'
 echo 'Use the -x flag to specify the path to a script that should be run before executing commands that create services'
 echo 'Use the -t flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, war, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number>' 
+echo 'Use the -f flag to specify a file that contains environment variables to be loaded before running the commands that create services'
 echo 'Use the -v flag to show the status for the services when installed'
 echo 'Use the -k flag to kill the services'
 echo 'Use the -z flag to destroy and delete the pre-created services'
-echo 'Use the -r flag to run the pre-created services'
+echo 'Use the -r flag to run or restart the pre-created services'
 echo 'Use the -h flag to show the help for this tool'
 echo "If the -w flag is not available, the current directory of this script will be taken as the working directory and the executable's path will be ${workDir}/main"
 echo "Hence, if you do not wish to supply these flags, just put your executable file in the same directory as this script and you will be fine"
@@ -84,6 +88,19 @@ fi
 if [ "$service" = "" ]; then
 echo "Please specify a service to continue!"
 exit 1
+fi
+
+
+if[ "$envFile" != "" ]; then
+    echo "Loading environment variables from $envFile"
+    if [ -f "$envFile" ]; then
+        source $envFile
+    else
+        echo "Environment file $envFile does not exist. Please check the path and try again."
+        exit 1
+    fi
+else
+    echo "No environment file specified, proceeding without loading any environment variables."
 fi
 
 # Every service we create will have its registry here
@@ -329,6 +346,13 @@ User=${user}
 Group=${group}
 WorkingDirectory=${workDir}
 $(
+
+if [ "$envFile" != "" ]; then
+echo "EnvironmentFile=${envFile}"
+else
+echo "EnvironmentFile=-/etc/default/${service}"
+fi
+
 if [ "$appType" = "$TYPE_SPRINGBOOT" ]; then
 echo "ExecStart=${javaPath} -jar ${execPath} --server.port=${port}"
 elif [ "$appType" = "$TYPE_MICRONAUT" ]; then
@@ -394,12 +418,20 @@ done
 echo "${servicePathLines}"
 echo "${serviceNameLines}"
 
-cat <<EOF> ${servicePathRegistry}
+cat << EOF > ${servicePathRegistry}
 ${servicePathLines}
 EOF
 
-cat <<EOF> ${serviceNamesRegistry}
+cat << EOF > ${serviceNamesRegistry}
 ${serviceNameLines}
 EOF
+
+
+if systemctl daemon-reload; then
+   echo "reloaded systemd daemon successfully"
+else
+   echo "couldn't reload systemd daemon"
+   exit 1
+fi
 
 echo "All's well that ends well"

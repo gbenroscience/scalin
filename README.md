@@ -6,6 +6,7 @@ It has very few flags that allow you to control the process, too.
 
 
 ## Prerequisite
+<b>We now support loading of environmen variables from external files before running the services. Also systemd daemon is now reloaded automatically after the orchestration. 
 <b>We now support spring boot, micronaut, quarkus, jar executables and native linux executables</b>
 
 ### Spring Boot
@@ -54,7 +55,8 @@ Now add the following line to the file:<br>
 12. *Use the `-w` flag to specify a working directory for the instances*<br>
 13. *Use the `-e` flag to specify the path to the service executable*<br>
 14. *Use the `-x` flag to specify a script that you would love to run before creating and starting the instances. This was included to allow users do stuff like: pull the source code from VCS, build the executable from source, and maybe copy the executable to the path specified using the `-e` flag*
-15. *Use the -t flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number>*
+15. *Use the `-t` flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number>*
+16. *Use the `-f` flag to specify a file that contains environment variables to be loaded before starting the service.*<br>
 
 
 ## Usage
