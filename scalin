@@ -91,7 +91,7 @@ exit 1
 fi
 
 
-if[ "$envFile" != "" ]; then
+if [ "$envFile" != "" ]; then
     echo "Loading environment variables from $envFile"
     if [ -f "$envFile" ]; then
         source $envFile
