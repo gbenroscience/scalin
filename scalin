@@ -38,7 +38,7 @@ print_usage() {
   printf "Usage: Do bash scalin or scalin -h to view help"
 }
 
-while getopts p:n:d:s:u:g:w:e:x:t:vkrhz flag; do
+while getopts p:n:d:s:u:g:w:e:x:t:f:vkrhz flag; do
     case "${flag}" in
         p) basePort=${OPTARG};;
         n) instances=${OPTARG};;
@@ -350,7 +350,7 @@ $(
 if [ "$envFile" != "" ]; then
 echo "EnvironmentFile=${envFile}"
 else
-echo "EnvironmentFile=-/etc/default/${service}"
+echo "EnvironmentFile=-/etc/default/${service}.env"
 fi
 
 if [ "$appType" = "$TYPE_SPRINGBOOT" ]; then
