@@ -85,7 +85,7 @@ echo 'Use the -r flag to run or restart the pre-created services'
 echo 'Use the -h flag to show the help for this tool'
 echo "If the -w flag is not available, the current directory of this script will be taken as the working directory and the executable's path will be ${workDir}/main"
 echo "Hence, if you do not wish to supply these flags, just put your executable file in the same directory as this script and you will be fine"
-echo 'Use the -l flag to specify how many lines of status log to show per instance (DEFAULT ${deflines})'
+echo "Use the -l flag to specify how many lines of status log to show per instance (DEFAULT ${deflines})"
 exit 0
 fi
 
