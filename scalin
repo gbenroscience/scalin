@@ -30,6 +30,8 @@ kill="xxx"
 teardown="xxx"
 run="xxx"
 help='xxx' 
+deflines=50  # default number of lines
+lines=$deflines  # default number of lines
 
 # NEWLINE=$'\n'
 NEWLINE='
@@ -38,7 +40,7 @@ print_usage() {
   printf "Usage: Do bash scalin or scalin -h to view help"
 }
 
-while getopts p:n:d:s:u:g:w:e:x:t:f:vkrhz flag; do
+while getopts p:n:d:s:u:g:w:e:x:t:f:vkrhzl flag; do
     case "${flag}" in
         p) basePort=${OPTARG};;
         n) instances=${OPTARG};;
@@ -56,6 +58,7 @@ while getopts p:n:d:s:u:g:w:e:x:t:f:vkrhz flag; do
         r) run=${OPTARG};;
         h) help=${OPTARG};;
         z) teardown=${OPTARG};;
+        l) lines=${OPTARG};;
         *) print_usage
         exit 1 ;;
     esac
@@ -82,6 +85,7 @@ echo 'Use the -r flag to run or restart the pre-created services'
 echo 'Use the -h flag to show the help for this tool'
 echo "If the -w flag is not available, the current directory of this script will be taken as the working directory and the executable's path will be ${workDir}/main"
 echo "Hence, if you do not wish to supply these flags, just put your executable file in the same directory as this script and you will be fine"
+echo 'Use the -l flag to specify how many lines of status log to show per instance (DEFAULT ${deflines})'
 exit 0
 fi
 
@@ -173,26 +177,28 @@ servicePathRegistry=${serviceFolder}/.registry.ser
 
 
 
-# User just wishes to check the status of the instances
+# User just wishes to check the status of the instances (collect up to 100 lines per instance and merge)
 if [ "$status" = "" ] ; then
-echo "Check status of all instances"
-if [ -f "$serviceNamesRegistry" ]; then
-    while IFS="" read -r p || [ -n "$p" ]
-do
-  echo "Checking status of instance $p"
-  
-  if systemctl status ${p}; then
-   echo "status check success"
-  else
-   echo "status check failed"
+  echo "Check status of all instances (up to 100 lines each, merged)"
+  if [ -f "$serviceNamesRegistry" ]; then
+      while IFS="" read -r p || [ -n "$p" ]
+      do
+        echo "=============================="
+        echo "Status for instance $p"
+        echo "=============================="
+        # Get up to 100 lines of status for each instance
+        if systemctl status --lines=100 ${p}; then
+          echo "---- END STATUS FOR $p ----"
+        else
+          echo "status check failed for $p"
+        fi
+        echo
+      done < ${serviceNamesRegistry}
+      exit 0
+  else 
+      echo "No status to check"
+      exit 1
   fi
-
-done < ${serviceNamesRegistry}
-exit 0
-else 
-    echo "No status to check"
-        exit 1
-fi
 fi
 
 # User just wishes to kill the instances
