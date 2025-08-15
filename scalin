@@ -360,7 +360,8 @@ echo "EnvironmentFile=-/etc/default/${service}.env"
 fi
 
 if [ "$appType" = "$TYPE_SPRINGBOOT" ]; then
-echo "ExecStart=${javaPath} -jar ${execPath} --server.port=${port}"
+SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-production}
+echo "ExecStart=${javaPath} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -jar ${execPath} --server.port=${port}"
 elif [ "$appType" = "$TYPE_MICRONAUT" ]; then
 echo "ExecStart=${javaPath} -jar ${execPath} --micronaut.server.port=${port}"
 elif [ "$appType" = "$TYPE_QUARKUS" ]; then
