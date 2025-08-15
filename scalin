@@ -179,7 +179,7 @@ servicePathRegistry=${serviceFolder}/.registry.ser
 
 # User just wishes to check the status of the instances (collect up to 100 lines per instance and merge)
 if [ "$status" = "" ] ; then
-  echo "Check status of all instances (up to 100 lines each, merged)"
+  echo "Check status of all instances (up to $lines lines each, merged)"
   if [ -f "$serviceNamesRegistry" ]; then
       while IFS="" read -r p || [ -n "$p" ]
       do

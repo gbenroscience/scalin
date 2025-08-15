@@ -22,7 +22,14 @@ Use the newly introduced flag -t war. This presupposes the fact that your applic
 ### Linux executable
 Use the newly introduced flag -t native or ignore the flag altogether. This presupposes the fact that your application can receive the port number from the command line using the --port=portnumber syntax. The system assumes your app is a native platform executable by default.
 
+##
+To view the status of a running service that you have orchestrated into n instances:
+Do:
+```
+scalin -s pluglr -v -l 2000
+```
 
+This will print the last 2000 lines of status from each of the instances.
 
 ## Installation
 You may type `chmod a+x /path/to/scalin` at the terminal to make the file executable.<br>
@@ -57,6 +64,7 @@ Now add the following line to the file:<br>
 14. *Use the `-x` flag to specify a script that you would love to run before creating and starting the instances. This was included to allow users do stuff like: pull the source code from VCS, build the executable from source, and maybe copy the executable to the path specified using the `-e` flag*
 15. *Use the `-t` flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number>*
 16. *Use the `-f` flag to specify a file that contains environment variables to be loaded before starting the service.*<br>
+17. *Use the `-l` flag to specify the number of lines of status to show when using the -v flag. e.g. scalin -s appName -v -l 200*
 
 
 ## Usage
