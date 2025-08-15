@@ -187,7 +187,7 @@ if [ "$status" = "" ] ; then
         echo "Status for instance $p"
         echo "=============================="
         # Get up to 100 lines of status for each instance
-        if systemctl status --lines=100 ${p}; then
+        if systemctl status --lines=$lines ${p}; then
           echo "---- END STATUS FOR $p ----"
         else
           echo "status check failed for $p"
