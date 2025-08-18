@@ -45,30 +45,30 @@ print_usage() {
 
 while getopts p:n:c:d:s:u:g:w:e:x:t:f:vkrhzli flag; do
     case "${flag}" in
-        p) basePort=${OPTARG};;
-        n) instances=${OPTARG};;
-        c) create=${OPTARG};;
-        d) desc=${OPTARG};;
-        s) service=${OPTARG};;
-        u) user=${OPTARG};;
-        g) group=${OPTARG};;
-        w) workDir=${OPTARG};;
-        e) execPath=${OPTARG};;
-        x) preRun=${OPTARG};;
-        t) appType=${OPTARG};;
-        f) envFile=${OPTARG};;
-        v) status=${OPTARG};;
-        k) kill=${OPTARG};;
-        r) run=${OPTARG};;
-        h) help=${OPTARG};;
-        z) teardown=${OPTARG};;
-        l) lines=${OPTARG};;
-        i) list=${OPTARG};;
+        p) basePort=${OPTARG} ;;
+        n) instances=${OPTARG} ;;
+        c) create="" ;;
+        d) desc=${OPTARG} ;;
+        s) service=${OPTARG} ;;
+        u) user=${OPTARG} ;;
+        g) group=${OPTARG} ;;
+        w) workDir=${OPTARG} ;;
+        e) execPath=${OPTARG} ;;
+        x) preRun=${OPTARG} ;;
+        t) appType=${OPTARG} ;;
+        f) envFile=${OPTARG} ;;
+        v) status=${OPTARG} ;;
+        k) kill=${OPTARG} ;;
+        r) run=${OPTARG} ;;
+        h) help=${OPTARG} ;;
+        z) teardown=${OPTARG} ;;
+        l) lines=${OPTARG} ;;
+        i) list=${OPTARG} ;;
         *) print_usage
         exit 1 ;;
     esac
 done
-
+echo "create= $create"
 if [ "$help" = "" ]; then
 echo 'HELP:'
 echo 'Use the -p flag to specify the base port number.(DEFAULT ${basePort})'
@@ -339,8 +339,8 @@ if [ "$create" = "" ]; then
         exit 1
       fi
     else
-    echo "No environment file specified, proceeding without loading any environment variables."
-  fi
+     echo "No environment file specified, proceeding without loading any environment variables."
+   fi
 
 
    # No working directory supplied, so set a default
