@@ -43,11 +43,10 @@ print_usage() {
   printf "Usage: Do bash scalin or scalin -h to view help-----$NEWLINE"
 }
 
-while getopts p:n:c:d:s:u:g:w:e:x:t:f:vkrhzli flag; do
+while getopts p:n:d:s:u:g:w:e:x:t:f:l:vckrhzi flag; do
     case "${flag}" in
         p) basePort=${OPTARG} ;;
         n) instances=${OPTARG} ;;
-        c) create="" ;;
         d) desc=${OPTARG} ;;
         s) service=${OPTARG} ;;
         u) user=${OPTARG} ;;
@@ -57,15 +56,15 @@ while getopts p:n:c:d:s:u:g:w:e:x:t:f:vkrhzli flag; do
         x) preRun=${OPTARG} ;;
         t) appType=${OPTARG} ;;
         f) envFile=${OPTARG} ;;
+        l) lines=${OPTARG} ;;
         v) status=${OPTARG} ;;
+        c) create=${OPTARG} ;;
         k) kill=${OPTARG} ;;
         r) run=${OPTARG} ;;
         h) help=${OPTARG} ;;
         z) teardown=${OPTARG} ;;
-        l) lines=${OPTARG} ;;
         i) list=${OPTARG} ;;
-        *) print_usage
-        exit 1 ;;
+        *) print_usage; exit 1 ;;
     esac
 done
 
