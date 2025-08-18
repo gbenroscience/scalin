@@ -5,9 +5,13 @@ Simple bash script to scale Linux apps horizontally
 It has very few flags that allow you to control the process, too.
 
 
+
 ## Prerequisite
 <b>We now support loading of environmen variables from external files before running the services. Also systemd daemon is now reloaded automatically after the orchestration. 
 <b>We now support spring boot, micronaut, quarkus, jar executables and native linux executables</b>
+<b>Added -c flag to force users to specify create mode, so that the command can know when to teardown existing services
+Now the -c flag must be specified before the other flags used to create a service
+</b>
 
 ### Spring Boot
 Use the newly introduced flag -t springboot
@@ -50,23 +54,23 @@ Now add the following line to the file:<br>
 
 1. *Use the `-s` flag to specify the service name*<br>
 2. *Use the `-h` flag to view help*<br>
-3. *Use the `-v` flag to view the status of all instances of a scaled service*<br>
-4. *Use the `-k` flag to kill all instances of a scaled service*<br>
-5. *Use the `-r` flag to run all instances of a scaled service*<br>
-6. *Use the `-z` flag to kill and delete all instances of a scaled service*<br>
-7. *Use the `-p` flag to specify the base port number*<br>
-8. *Use the `-n` flag to specify the number of instances*<br>
-9. *Use the `-d` flag to specify a description for the service*<br>
-10. *Use the `-u` flag to specify the linux user running `scalin`*<br>
-11. *Use the `-g` flag to specify the linux group running `scalin`*<br>
-12. *Use the `-w` flag to specify a working directory for the instances*<br>
-13. *Use the `-e` flag to specify the path to the service executable*<br>
-14. *Use the `-x` flag to specify a script that you would love to run before creating and starting the instances. This was included to allow users do stuff like: pull the source code from VCS, build the executable from source, and maybe copy the executable to the path specified using the `-e` flag*
-15. *Use the `-t` flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number>*
-16. *Use the `-f` flag to specify a file that contains environment variables to be loaded before starting the service.*<br>
-17. *Use the `-l` flag to specify the number of lines of status to show when using the -v flag. e.g. scalin -s appName -v -l 200*
-
-
+3. *Use the `-c` flag to enter create mode. This is needed to create orchestrate a service and destroy all existing instances of that service*<br>
+4. *Use the `-v` flag to view the status of all instances of a scaled service*<br>
+5. *Use the `-k` flag to kill all instances of a scaled service*<br>
+6. *Use the `-r` flag to run all instances of a scaled service*<br>
+7. *Use the `-z` flag to kill and delete all instances of a scaled service*<br>
+8. *Use the `-p` flag to specify the base port number*<br>
+9. *Use the `-n` flag to specify the number of instances*<br>
+10. *Use the `-d` flag to specify a description for the service*<br>
+11. *Use the `-u` flag to specify the linux user running `scalin`*<br>
+12. *Use the `-g` flag to specify the linux group running `scalin`*<br>
+13. *Use the `-w` flag to specify a working directory for the instances*<br>
+14. *Use the `-e` flag to specify the path to the service executable*<br>
+15. *Use the `-x` flag to specify a script that you would love to run before creating and starting the instances. This was included to allow users do stuff like: pull the source code from VCS, build the executable from source, and maybe copy the executable to the path specified using the `-e` flag*
+16. *Use the `-t` flag to specify the type of application being scaled. (native, quarkus, micronaut, springboot, jar, native(default)). For the jar and native types, make sure your application can receive the port number from the command line args using --port=<port_number>*
+17. *Use the `-f` flag to specify a file that contains environment variables to be loaded before starting the service.*<br>
+18. *Use the `-l` flag to specify the number of lines of status to show when using the -v flag. e.g. scalin -s appName -v -l 200*
+19. *Use the `-i` flag to specify an app whose services you wish to list. e.g. scalin -s appName -i. If you do: scalin i, as a bonus, you will get the names of the apps you currently have orchestrated with scalin*
 ## Usage
 
 To view `help`, type:

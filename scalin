@@ -1,5 +1,5 @@
 #!/bin/bash
-# The path where scalin is currently running
+# The path where scalin stores its system files
 APP_DIR=/home/scalin
 # mkdir -p ${APP_DIR}
 TYPE_SPRINGBOOT="springboot"
@@ -21,6 +21,7 @@ group='root'
 # Load environment variables from this file
 envFile=''
 workDir=''
+list='xxx'
 execPath=''
 # We support springboot, quarkus and micronaut, jar, war and native for now, but we default to native(if not specified). We use this to determine how to build the ExecStart line.
 appType=$TYPE_NATIVE
@@ -39,10 +40,10 @@ lines=$deflines  # default number of lines
 NEWLINE='
 '
 print_usage() {
-  printf "Usage: Do bash scalin or scalin -h to view help"
+  printf "Usage: Do bash scalin or scalin -h to view help-----$NEWLINE"
 }
 
-while getopts p:n:c:d:s:u:g:w:e:x:t:f:vkrhzl flag; do
+while getopts p:n:c:d:s:u:g:w:e:x:t:f:vkrhzli flag; do
     case "${flag}" in
         p) basePort=${OPTARG};;
         n) instances=${OPTARG};;
@@ -62,6 +63,7 @@ while getopts p:n:c:d:s:u:g:w:e:x:t:f:vkrhzl flag; do
         h) help=${OPTARG};;
         z) teardown=${OPTARG};;
         l) lines=${OPTARG};;
+        i) list=${OPTARG};;
         *) print_usage
         exit 1 ;;
     esac
@@ -72,10 +74,12 @@ echo 'HELP:'
 echo 'Use the -p flag to specify the base port number.(DEFAULT ${basePort})'
 echo 'Use the -n flag to specify the number of instances to create.(DEFAULT ${instances})'
 echo 'Your instances will be spread on ports ranging from the supplied or default value up to (base+instances-1)'
-echo 'Use the -s flag to supply a name for the service being scaled.'
-echo 'Use the -d flag to supply a description for the service being scaled.'
-echo 'Use the -u flag to specify the linux user that is running the services.'
-echo 'Use the -g flag to specify the linux group that is running the services.'
+echo 'Use the -c flag to specify create mode: e.g:'
+echo 'scalin -s appName -c -p 8000 -n 3 -d "Online Radio" -t springboot -u root -g wheel -w /home/apps/etc/ -f /etc/app.env -e /home/apps/xx/yy/a.war'
+echo 'Use the -s flag to supply a name for the app being scaled.'
+echo 'Use the -d flag to supply a description for the app being scaled.'
+echo "Use the -u flag to specify the linux user that is running the app's services."
+echo "Use the -g flag to specify the linux group that is running the app's services."
 echo 'Use the -w flag to specify the working directory for the service.'
 echo 'Use the -e flag to specify the path to the executable for the service'
 echo 'Use the -x flag to specify the path to a script that should be run before executing commands that create services'
@@ -86,6 +90,7 @@ echo 'Use the -k flag to kill the services'
 echo 'Use the -z flag to destroy and delete the pre-created services'
 echo 'Use the -r flag to run or restart the pre-created services'
 echo 'Use the -h flag to show the help for this tool'
+echo "Use the -i flag to show all of scalin's current apps"
 echo "If the -w flag is not available, the current directory of this script will be taken as the working directory and the executable's path will be ${workDir}/main"
 echo "Hence, if you do not wish to supply these flags, just put your executable file in the same directory as this script and you will be fine"
 echo "Use the -l flag to specify how many lines of status log to show per instance (DEFAULT ${deflines})"
@@ -93,51 +98,49 @@ exit 0
 fi
 
 
+
+if [ "$list" = "" ]; then # list specified and.. scalin -i
+     if [ $service = "xxx"]; then # no app specified ---- scalin -i
+            # Check if the file exists
+            if [ -d "$APP_DIR" ]; then
+                echo "=========================Scalin Apps========================="
+                 for item in "$APP_DIR"/*; do
+                 # Use basename to get only the file/directory name
+                 echo "$(basename "$item")"
+                 done
+                 exit 0
+            else
+                 echo "No scalin app created yet!"
+                 exit 1
+            fi
+     else #  scalin -s app -i  ///fetch the services belonging to the orchestrated app
+            # Check if the file exists
+              echo "Service name is ${service}"
+               # List services belonging to the app
+               # Full path to the target file
+               TARGET="$APP_DIR/$service"/.services.ser
+               # Check if the file exists
+               echo "=========================Scalin App($service's services)========================="
+               if [ -n "$TARGET" ]; then
+                 while IFS= read -r ln; do
+                   echo "$ln"
+                 done < "$TARGET"
+                   exit 0
+                else
+                   echo " Service listing not found"
+                   exit 1
+                fi
+           exit 1
+     fi
+fi
+
 if [ "$service" = "" ]; then
-echo "Please specify a service to continue!"
-exit 1
+     echo "Please specify a service to continue!"
+     exit 1
+  else # scalin -s app -i  ///fetch the services belonging to the orchestrated app
+      echo "Service name is ${service}"
 fi
 
-
-
-if [ "$envFile" != "" ]; then
-    echo "Loading environment variables from $envFile"
-    if [ -f "$envFile" ]; then
-        source $envFile
-    else
-        echo "Environment file $envFile does not exist. Please check the path and try again."
-        exit 1
-    fi
-else
-    echo "No environment file specified, proceeding without loading any environment variables."
-fi
-
-# Every service we create will have its registry here
-serviceFolder=${APP_DIR}/${service}
-
-# No working directory supplied, so set a default
-if [ "$workDir" = "" ] ; then
-workDir=$serviceFolder
-fi
-
-# No executable path supplied, so set a default
-if [ "$execPath" = "" ] ; then
-execPath=$workDir/main
-fi
-
-# Run some checks to ensure the inputs are valid
-if ! [[ "$basePort" =~ ^[0-9]+$ ]]; then
-  echo "Error: basePort (-p) must be a valid number."
-  exit 1
-fi
-if ! [[ "$instances" =~ ^[0-9]+$ && "$instances" -gt 0 ]]; then
-  echo "Error: instances (-n) must be a positive integer."
-  exit 1
-fi
-if [ -z "$service" ]; then
-  echo "Error: You must specify a service name with -s."
-  exit 1
-fi
 
 
 if [ "$appType" = "$TYPE_SPRINGBOOT" ]; then
@@ -158,8 +161,8 @@ exit 1
 fi
 
 
-
-
+# Every service we create will have its registry here
+serviceFolder=${APP_DIR}/${service}
 # Create the serviceFolder directory
 if [ ! -d "$serviceFolder" ]; then
     if mkdir -p $serviceFolder; then
@@ -178,8 +181,6 @@ serviceNamesRegistry=${serviceFolder}/.services.ser
 
 # store the full paths to the services here
 servicePathRegistry=${serviceFolder}/.registry.ser
-
-
 
 
 # User just wishes to check the status of the instances (collect up to 100 lines per instance and merge)
@@ -320,25 +321,67 @@ echo "teardown all instances and destroy scaled service"
      exit 0
 fi
 # END TEARDOWN
+ 
 
-# This is a teardown and destroy process also.
 
 
 if [ "$create" = "" ]; then
   echo "services will be created; pre-existing services will be destroyed and deleted!"
   teardownservices $serviceNamesRegistry $servicePathRegistry
   echo "destroyed and deleted all running instances. will create to new specs"
+  
+   if [ "$envFile" != "" ]; then
+      echo "Loading environment variables from $envFile"
+      if [ -f "$envFile" ]; then
+        source $envFile
+      else
+        echo "Environment file $envFile does not exist. Please check the path and try again."
+        exit 1
+      fi
+    else
+    echo "No environment file specified, proceeding without loading any environment variables."
+  fi
+
+
+   # No working directory supplied, so set a default
+   if [ "$workDir" = "" ] ; then
+     workDir=$serviceFolder
+   fi
+
+   # No executable path supplied, so set a default
+   if [ "$execPath" = "" ] ; then
+   execPath=$workDir/main
+   fi
+
+  # Run some checks to ensure the inputs are valid
+  if ! [[ "$basePort" =~ ^[0-9]+$ ]]; then
+    echo "Error: basePort (-p) must be a valid number."
+    exit 1
+  fi
+  if ! [[ "$instances" =~ ^[0-9]+$ && "$instances" -gt 0 ]]; then
+    echo "Error: instances (-n) must be a positive integer."
+    exit 1
+  fi
+  if [ -z "$service" ]; then
+    echo "Error: You must specify a service name with -s."
+    exit 1
+  fi
+
+  else
+    echo "The -c flag(to create) is needed for every other task"
+    exit 0  
 fi
+
 
 echo 'run user-specified tasks'
 if [ $preRun != "" ] && [ $preRun != "xxx" ]; then
-# task exists
-if source $preRun; then
-echo 'user-specified scripts completed successfully'
-else
-echo 'user-specified scripts failed'
-exit 1
-fi
+  # task exists
+  if source $preRun; then
+   echo 'user-specified scripts completed successfully'
+  else
+   echo 'user-specified scripts failed'
+   exit 1
+  fi
 fi
 
 execCrash="false"
