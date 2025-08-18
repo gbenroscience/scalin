@@ -100,7 +100,7 @@ fi
 
 
 if [ "$list" = "" ]; then # list specified and.. scalin -i
-     if [ "$service" = "xxx" ]; then # no app specified ---- scalin -i
+     if [ "$service" = "" ]; then # no app specified ---- scalin -i
             # Check if the file exists
             if [ -d "$APP_DIR" ]; then
                 echo "=========================Scalin Apps========================="
