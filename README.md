@@ -77,6 +77,11 @@ To view the status of running services:<br>
 
 `scalin -s <service_name> -v`<br>
 
+
+To view the status of running services to the tune of 100 lines per instance:<br>
+
+`scalin -s <service_name> -v -l 100`<br>
+
 To kill the running services:
 
 `scalin -s <service_name> -k`<br>

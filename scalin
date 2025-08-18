@@ -13,6 +13,7 @@ serviceNameLines=''
 
 basePort=8080
 instances=1
+create="xxx" # Will teardown all preexisting instances of the app and create new services
 desc='Example scalin service'
 service=''
 user='root'
@@ -32,6 +33,7 @@ run="xxx"
 help='xxx' 
 deflines=50  # default number of lines
 lines=$deflines  # default number of lines
+ 
 
 # NEWLINE=$'\n'
 NEWLINE='
@@ -40,10 +42,11 @@ print_usage() {
   printf "Usage: Do bash scalin or scalin -h to view help"
 }
 
-while getopts p:n:d:s:u:g:w:e:x:t:f:vkrhzl flag; do
+while getopts p:n:c:d:s:u:g:w:e:x:t:f:vkrhzl flag; do
     case "${flag}" in
         p) basePort=${OPTARG};;
         n) instances=${OPTARG};;
+        c) create=${OPTARG};;
         d) desc=${OPTARG};;
         s) service=${OPTARG};;
         u) user=${OPTARG};;
@@ -89,10 +92,12 @@ echo "Use the -l flag to specify how many lines of status log to show per instan
 exit 0
 fi
 
+
 if [ "$service" = "" ]; then
 echo "Please specify a service to continue!"
 exit 1
 fi
+
 
 
 if [ "$envFile" != "" ]; then
@@ -242,6 +247,8 @@ else
 fi
 fi
 
+
+
 teardownservices(){
   local snr=$1
   local spr=$2
@@ -306,19 +313,22 @@ fi
   
 }
 
-# TEAR DOWN
-if [ "$teardown" = "" ]; then
+# TEAR DOWN scalin -s appName -z
+if [ "$teardown" = "" ]; then # teardown was specified
 echo "teardown all instances and destroy scaled service"
   teardownservices $serviceNamesRegistry $servicePathRegistry
-  exit 0
+     exit 0
 fi
 # END TEARDOWN
 
 # This is a teardown and destroy process also.
 
-echo "destroy and delete all running instances, before creating to new specs"
 
-teardownservices $serviceNamesRegistry $servicePathRegistry
+if [ "$create" = "" ]; then
+  echo "services will be created; pre-existing services will be destroyed and deleted!"
+  teardownservices $serviceNamesRegistry $servicePathRegistry
+  echo "destroyed and deleted all running instances. will create to new specs"
+fi
 
 echo 'run user-specified tasks'
 if [ $preRun != "" ] && [ $preRun != "xxx" ]; then
