@@ -68,7 +68,7 @@ while getopts p:n:c:d:s:u:g:w:e:x:t:f:vkrhzli flag; do
         exit 1 ;;
     esac
 done
-echo "create= $create"
+
 if [ "$help" = "" ]; then
 echo 'HELP:'
 echo 'Use the -p flag to specify the base port number.(DEFAULT ${basePort})'
